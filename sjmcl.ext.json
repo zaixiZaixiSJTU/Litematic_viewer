@@ -1,0 +1,11 @@
+{
+  "identifier": "cn.sjtu.sjmcl.litematic_viewer",
+  "name": "Litematic 三维预览",
+  "description": "直接在 SJMCL 中本地解析并三维预览 .litematic 文件",
+  "author": "SJMCL Community",
+  "version": "0.4.1",
+  "minimalLauncherVersion": "1.0.0",
+  "frontend": {
+    "entry": "frontend/index.js"
+  }
+}

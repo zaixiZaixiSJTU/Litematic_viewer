@@ -1,0 +1,27 @@
+{
+  "name": "sjmcl-litematic-viewer",
+  "private": true,
+  "version": "0.4.1",
+  "description": "在 SJMCL 中本地解析并三维预览 Litematica 投影文件。",
+  "type": "module",
+  "scripts": {
+    "build": "node ./scripts/build.mjs",
+    "dev": "node ./scripts/dev.mjs",
+    "bump": "node ./scripts/bump.mjs"
+  },
+  "dependencies": {
+    "deepslate": "0.26.0",
+    "fflate": "^0.8.2",
+    "gl-matrix": "^3.4.4",
+    "three": "0.162.0"
+  },
+  "devDependencies": {
+    "@types/three": "0.162.0",
+    "esbuild": "^0.25.3",
+    "semver": "^7.7.2",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=18.18.0"
+  }
+}
