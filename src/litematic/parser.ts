@@ -33,6 +33,16 @@ function vector(value: NbtValue | undefined, label: string): [number, number, nu
   const v = compound(value, label); return [numberAt(v.x), numberAt(v.y), numberAt(v.z)];
 }
 interface PaletteEntry { name: string; properties: Record<string, string>; }
+
+/** Litematica stores block-state index 0 at the region bounding box's minimum corner. */
+export function regionMinCorner(position: [number, number, number], size: [number, number, number]): [number, number, number] {
+  return [
+    position[0] + (size[0] < 0 ? size[0] + 1 : 0),
+    position[1] + (size[1] < 0 ? size[1] + 1 : 0),
+    position[2] + (size[2] < 0 ? size[2] + 1 : 0)
+  ];
+}
+
 function paletteEntry(value: NbtValue): PaletteEntry {
   const item = compound(value, "BlockStatePalette 项");
   const rawProperties = item.Properties ? compound(item.Properties, "BlockStatePalette.Properties") : {};
@@ -95,22 +105,24 @@ export function parseLitematic(input: Uint8Array, fileName = "未命名投影"):
   let totalVolume = 0, declaredBlocks = numberAt(metadata.TotalBlocks), candidateBlocks = 0;
   let min: [number, number, number] = [Infinity, Infinity, Infinity];
   let max: [number, number, number] = [-Infinity, -Infinity, -Infinity];
-  const prepared: Array<{ position: [number, number, number]; size: [number, number, number]; palette: PaletteEntry[]; states: NbtLong[] }> = [];
+  const prepared: Array<{ origin: [number, number, number]; size: [number, number, number]; palette: PaletteEntry[]; states: NbtLong[] }> = [];
   for (const [regionName, raw] of regionEntries) {
     const region = compound(raw, `区域 ${regionName}`), size = vector(region.Size, `${regionName}.Size`);
     const position = vector(region.Position, `${regionName}.Position`), paletteRaw = region.BlockStatePalette;
     if (!Array.isArray(paletteRaw)) throw new Error(`区域 ${regionName} 缺少 BlockStatePalette`);
     const palette = paletteRaw.map(paletteEntry), states = region.BlockStates;
     if (!Array.isArray(states) || states.some((v) => !isNbtLong(v))) throw new Error(`区域 ${regionName} 缺少 BlockStates`);
-    const volume = Math.abs(size[0] * size[1] * size[2]); totalVolume += volume;
+    const origin = regionMinCorner(position, size);
+    const dimensions: [number, number, number] = [Math.abs(size[0]), Math.abs(size[1]), Math.abs(size[2])];
+    const volume = dimensions[0] * dimensions[1] * dimensions[2]; totalVolume += volume;
     const end: [number, number, number] = [
-      position[0] + (size[0] < 0 ? size[0] + 1 : size[0] - 1),
-      position[1] + (size[1] < 0 ? size[1] + 1 : size[1] - 1),
-      position[2] + (size[2] < 0 ? size[2] + 1 : size[2] - 1)
+      origin[0] + dimensions[0] - 1,
+      origin[1] + dimensions[1] - 1,
+      origin[2] + dimensions[2] - 1
     ];
-    min = [Math.min(min[0], position[0], end[0]), Math.min(min[1], position[1], end[1]), Math.min(min[2], position[2], end[2])];
-    max = [Math.max(max[0], position[0], end[0]), Math.max(max[1], position[1], end[1]), Math.max(max[2], position[2], end[2])];
-    candidateBlocks += volume; prepared.push({ position, size, palette, states: states as NbtLong[] });
+    min = [Math.min(min[0], origin[0]), Math.min(min[1], origin[1]), Math.min(min[2], origin[2])];
+    max = [Math.max(max[0], end[0]), Math.max(max[1], end[1]), Math.max(max[2], end[2])];
+    candidateBlocks += volume; prepared.push({ origin, size: dimensions, palette, states: states as NbtLong[] });
   }
 
   const stride = Math.max(1, Math.ceil(candidateBlocks / MAX_RENDERED_BLOCKS));
@@ -125,9 +137,9 @@ export function parseLitematic(input: Uint8Array, fileName = "未命名投影"):
       if (isInvisible(state.name)) continue;
       visibleBlocks++;
       if ((visibleBlocks - 1) % stride !== 0) continue;
-      const wx = region.position[0] + (region.size[0] < 0 ? -x : x);
-      const wy = region.position[1] + (region.size[1] < 0 ? -y : y);
-      const wz = region.position[2] + (region.size[2] < 0 ? -z : z);
+      const wx = region.origin[0] + x;
+      const wy = region.origin[1] + y;
+      const wz = region.origin[2] + z;
       blocks.push({ x: wx, y: wy, z: wz, name: state.name, color: blockColor(state.name), properties: state.properties }); sampledVisible++;
     }
   }

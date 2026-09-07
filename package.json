@@ -7,6 +7,7 @@
   "scripts": {
     "build": "node ./scripts/build.mjs",
     "dev": "node ./scripts/dev.mjs",
+    "test": "esbuild ./tests/parser-coordinates.test.ts --bundle --platform=node --format=esm --outfile=./dist/parser-coordinates.test.mjs && node --test ./dist/parser-coordinates.test.mjs",
     "bump": "node ./scripts/bump.mjs"
   },
   "dependencies": {

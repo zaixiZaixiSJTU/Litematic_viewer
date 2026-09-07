@@ -1,6 +1,8 @@
 import type { ExtensionFactory, ExtensionFactoryApi } from "./types/host";
 import { createViewerPage } from "./pages/viewer-page";
 import { createHomeWidget } from "./widgets/home-widget";
+import { VIEWER_ROUTE_PATH, VIEWER_WINDOW_ROUTE_PATH } from "./navigation/viewer-route";
+import { createSchematicPreviewSlot, INSTANCE_SCHEMATIC_OPERATIONS_SLOT } from "./slots/schematic-preview-slot";
 
 (function registerLitematicViewer(factory: ExtensionFactory) {
   const token = document.currentScript?.dataset?.extensionToken || "";
@@ -18,8 +20,11 @@ import { createHomeWidget } from "./widgets/home-widget";
       Component: createHomeWidget(api)
     },
     pages: [
-      { routePath: "viewer", Component: createViewerPage(api, false) },
-      { routePath: "viewer-window", isStandAlone: true, Component: createViewerPage(api, true) }
-    ]
+      { routePath: VIEWER_ROUTE_PATH, Component: createViewerPage(api, false) },
+      { routePath: VIEWER_WINDOW_ROUTE_PATH, isStandAlone: true, Component: createViewerPage(api, true) }
+    ],
+    slots: {
+      [INSTANCE_SCHEMATIC_OPERATIONS_SLOT]: createSchematicPreviewSlot(api)
+    }
   };
 });

@@ -1,5 +1,32 @@
 export type ExtensionComponent<TProps = Record<string, never>> = (props: TProps) => unknown;
 
+export interface InstanceSummary {
+  id?: string;
+  name?: string;
+  versionPath?: string;
+  isVersionIsolated?: boolean;
+  [key: string]: unknown;
+}
+
+export interface SchematicInfo {
+  name: string;
+  filePath: string;
+  relativePath: string;
+}
+
+export interface SchematicSlotContext {
+  instanceId?: string;
+  summary?: InstanceSummary;
+  schematic: SchematicInfo;
+}
+
+export interface ExtensionSlotItem {
+  icon: string;
+  label?: string;
+  onClick?: (...args: any[]) => void;
+  danger?: boolean;
+}
+
 export interface ExtensionFactoryApi {
   React: Record<string, any>;
   ChakraUI: Record<string, any>;
@@ -7,7 +34,9 @@ export interface ExtensionFactoryApi {
   identifier: string;
   resolveAssetUrl(path: string): string;
   useHostData(): {
-    selectedInstance?: { id?: string; name?: string; versionPath?: string; isVersionIsolated?: boolean };
+    selectedInstance?: InstanceSummary;
+    instanceList: InstanceSummary[];
+    routeQuery: Record<string, string | string[] | undefined>;
     [key: string]: unknown;
   };
   getHostContext(): {
@@ -38,6 +67,11 @@ export interface ExtensionRegistration {
     isStandAlone?: boolean;
     Component: ExtensionComponent<any>;
   }>;
+  slots?: {
+    "ui.instance.schematic.item_menu_operations"?: {
+      getItems(context: SchematicSlotContext): ExtensionSlotItem[];
+    };
+  };
 }
 
 export type ExtensionFactory = (api: ExtensionFactoryApi) => ExtensionRegistration | void;

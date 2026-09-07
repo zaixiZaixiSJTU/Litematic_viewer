@@ -9,7 +9,9 @@
 ## 功能
 
 - 自动列出当前所选实例 `schematics` 目录中的 `.litematic` 文件，并默认打开第一个文件
+- 在启动器实例的原理图列表中注册“三维预览”按钮；按钮位于“复制/移动”左侧，并直接打开所选原理图
 - 支持 gzip NBT、多区域、负方向区域尺寸和跨 64 位边界的方块状态索引
+- 负尺寸区域按包围盒最小角还原，避免原理图在 X/Z 方向镜像或沿 Y 轴倒置
 - 按完整方块状态加载原版 blockstate、模型 JSON 和纹理图集
 - 仅允许实际覆盖 `16 × 16 × 16` 且六面完整的模型遮挡相邻面，避免非完整方块造成缺面
 - 支持拖拽旋转、滚轮缩放、地面网格及透明方块分层
@@ -28,7 +30,7 @@
 
 1. 在 SJMCL 中选择一个已经安装完成的游戏实例。
 2. 将 `.litematic` 文件放入该实例的 `schematics` 文件夹。
-3. 从启动器首页卡片或扩展页面打开“Litematic 三维预览”。
+3. 从启动器首页卡片或扩展页面打开“Litematic 三维预览”；也可以在“实例 → 原理图”中点击具体原理图右侧、“复制/移动”左侧的“三维预览”按钮。
 4. 从左侧列表切换原理图；也可以点击“选择文件”打开其他位置的文件。
 
 页面顶部显示“原版模型”时，表示客户端资源加载成功；显示“兼容模型”时，扩展会使用不带原版纹理的兼容预览，并在页面中说明资源加载失败的原因。
@@ -48,6 +50,7 @@
 git clone https://github.com/zaixiZaixiSJTU/Litematic_viewer.git
 cd Litematic_viewer
 npm install
+npm test
 npm run build
 ```
 
@@ -66,6 +69,8 @@ npm run dev -- --path ./dist/dev
 ## 项目结构
 
 - `src/index.ts`：SJMCL 扩展注册入口
+- `src/navigation/`：扩展页面 slug、路由和查询参数构造
+- `src/slots/`：启动器 UI slot 注册（包括实例原理图快捷预览按钮）
 - `src/litematic/`：gzip、NBT 和 Litematic 解析
 - `src/viewer/resource-pack.ts`：客户端 JAR 方块状态、模型和纹理加载
 - `src/viewer/resource-scene.ts`：原版资源模型渲染与交互
