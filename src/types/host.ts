@@ -5,6 +5,9 @@ export interface InstanceSummary {
   name?: string;
   versionPath?: string;
   isVersionIsolated?: boolean;
+  version?: string;
+  majorVersion?: string;
+  modLoader?: { loaderType?: string; version?: string; [key: string]: unknown };
   [key: string]: unknown;
 }
 
@@ -12,6 +15,23 @@ export interface SchematicInfo {
   name: string;
   filePath: string;
   relativePath: string;
+}
+
+export interface LocalModInfo {
+  enabled: boolean;
+  modId: string;
+  name: string;
+  fileName: string;
+  filePath: string;
+  loaderType?: string;
+  [key: string]: unknown;
+}
+
+export interface ResourcePackInfo {
+  name: string;
+  filePath: string;
+  description?: string;
+  [key: string]: unknown;
 }
 
 export interface SchematicSlotContext {

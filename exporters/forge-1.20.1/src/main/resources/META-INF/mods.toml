@@ -1,0 +1,16 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+
+[[mods]]
+modId="litematic_viewer_exporter"
+version="${file.jarVersion}"
+displayName="Litematic Viewer Baked Model Exporter"
+description='''Exports Minecraft's final baked block models for the SJMCL Litematic Viewer.'''
+
+[[dependencies.litematic_viewer_exporter]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1,1.20.2)"
+ordering="NONE"
+side="CLIENT"

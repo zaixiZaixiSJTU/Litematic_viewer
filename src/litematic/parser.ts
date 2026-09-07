@@ -20,6 +20,7 @@ export interface LitematicPreview {
   visibleBlocks: number;
   skippedBlocks: number;
   blocks: PreviewBlock[];
+  blockNames: string[];
   bounds: { min: [number, number, number]; max: [number, number, number] };
 }
 
@@ -127,6 +128,7 @@ export function parseLitematic(input: Uint8Array, fileName = "未命名投影"):
 
   const stride = Math.max(1, Math.ceil(candidateBlocks / MAX_RENDERED_BLOCKS));
   const blocks: PreviewBlock[] = [];
+  const blockNames = new Set<string>();
   let visibleBlocks = 0, sampledVisible = 0;
   for (const region of prepared) {
     const sx = Math.abs(region.size[0]), sy = Math.abs(region.size[1]), sz = Math.abs(region.size[2]);
@@ -135,6 +137,7 @@ export function parseLitematic(input: Uint8Array, fileName = "未命名投影"):
       const state = region.palette[paletteIndex(region.states, x + z * sx + y * sx * sz, bits)]
         || { name: "minecraft:air", properties: {} };
       if (isInvisible(state.name)) continue;
+      blockNames.add(state.name);
       visibleBlocks++;
       if ((visibleBlocks - 1) % stride !== 0) continue;
       const wx = region.origin[0] + x;
@@ -149,6 +152,6 @@ export function parseLitematic(input: Uint8Array, fileName = "未命名投影"):
     author: stringAt(metadata.Author), description: stringAt(metadata.Description),
     minecraftDataVersion: numberAt(root.MinecraftDataVersion) || undefined,
     regionCount: regionEntries.length, totalVolume, declaredBlocks: declaredBlocks || visibleBlocks,
-    visibleBlocks, skippedBlocks: Math.max(0, visibleBlocks - sampledVisible), blocks, bounds: { min, max }
+    visibleBlocks, skippedBlocks: Math.max(0, visibleBlocks - sampledVisible), blocks, blockNames: Array.from(blockNames), bounds: { min, max }
   };
 }

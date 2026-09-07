@@ -6,3 +6,5 @@
 .idea
 .vscode
 /.agents
+/exporters/**/.gradle
+/exporters/**/build
