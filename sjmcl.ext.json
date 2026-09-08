@@ -3,7 +3,7 @@
   "name": "Litematic 三维预览",
   "description": "直接在 SJMCL 中本地解析并三维预览 .litematic 文件",
   "author": "SJMCL Community",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "minimalLauncherVersion": "1.0.0",
   "frontend": {
     "entry": "frontend/index.js"

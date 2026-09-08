@@ -7,6 +7,7 @@ import {
   type Resources
 } from "deepslate";
 import { unzipSync } from "fflate";
+import { createSpecialBlockResources } from "./special-block-models";
 
 const decoder = new TextDecoder();
 const TRANSPARENT_TEXTURE = /(water|lava|glass|ice|leaves|portal|slime|honey)/;
@@ -65,6 +66,9 @@ export class ClientResources implements Resources {
       if (match) textures[`${match[1]}:block/${match[2]}`] = new Blob([bytes.slice().buffer], { type: "image/png" });
     }
     if (!this.definitions.size || !this.models.size || !Object.keys(textures).length) throw new Error("客户端 JAR 中没有完整的方块状态、模型和纹理资源");
+    const special = createSpecialBlockResources();
+    for (const [id, definition] of Object.entries(special.definitions)) this.definitions.set(id, BlockDefinition.fromJson(definition));
+    for (const [id, model] of Object.entries(special.models)) this.models.set(id, BlockModel.fromJson(model));
     this.atlas = await TextureAtlas.fromBlobs(textures);
     for (const model of this.models.values()) {
       try { model.flatten(this); } catch { /* missing optional parent model */ }
